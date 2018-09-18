@@ -25,14 +25,33 @@ from re import findall
 # use the "find" method to find and print each line of the
 # novel that mentions Morlocks.
 time_machine = open('TheTimeMachine.txt', 'U') # open the file in "universal" mode
-pass
 
+filthy_murlocks = []
+for string in time_machine:
+    position = string.find('Morlocks');
+
+    if position != -1:
+        #print('MURLOCKS! at ', position);
+        position = string.find('Morlocks', position + 1);
+    
+    
 # Task 2: The heroine is called Weena, one of a tribe of devolved human
 # beings living in the distant future.  Using the "find" method and a
 # while loop, print all the locations in the novel where Weena's name is
 # mentioned.
-time_machine_text = open('TheTimeMachine.txt', 'U').read() # read the file's contents
-pass
+time_machine_text = open('TheTimeMachine.txt').read() # read the file's contents
+
+position = time_machine_text.find('Weena');
+
+while position != -1:
+    #print('Weena! at ', position);
+    position = time_machine_text.find('Weena', position + 1);
+    
+print(time_machine_text[173033]+
+      time_machine_text[173034]+
+      time_machine_text[173035]+
+      time_machine_text[173036]+
+      time_machine_text[173037], 'Should be a Weena');
 
 # Task 3: Rather than using loops and repeated calls to "find", the
 # "findall" function provides a much easier way to find all occurrences
@@ -40,21 +59,32 @@ pass
 # Weena's name appears in the novel.  Hint: This can be done very
 # concisely by applying the built-in "len" function to the result
 # returned by findall.
-time_machine_text = open('TheTimeMachine.txt', 'U').read() # read the file's contents
-pass
+time_machine_text = open('TheTimeMachine.txt').read() # read the file's contents
+
+Weena_Mentions = []
+
+Weena_Mentions = findall('Weena', time_machine_text);
+print(len(Weena_Mentions));
     
 # Task 4: In this plain text version of the novel emphasis has been indicated
 # by surrounding words with underscores, e.g., "_nil_".  Use the
 # findall function and an appropriate regular expression to find and
 # print all individual emphasised words in the novel's text.  Do not print the
 # underscores.
-time_machine_text = open('TheTimeMachine.txt', 'U').read() # read the file's contents
-pass
+time_machine_text = open('TheTimeMachine.txt').read() # read the file's contents
+
+Weena_Mentions = []
+
+Weena_Mentions = findall('_(.*)_', time_machine_text);
+print((Weena_Mentions));
 
 # Task 5: The file contains many hyphenated words and phrases, e.g., "re-use".
 # Use the findall function and an appropriate regular expression to find and
 # print all phrases in the file containing a single hyphen. Ensure that you
 # allow for both upper and lower case letters in the phrase.
-time_machine_text = open('TheTimeMachine.txt', 'U').read() # read the file's contents
-pass
+time_machine_text = open('TheTimeMachine.txt').read() # read the file's contents
+Weena_Mentions = []
+
+Weena_Mentions = findall('[a-z]+-[a-z]+', time_machine_text);
+print((Weena_Mentions));
 
