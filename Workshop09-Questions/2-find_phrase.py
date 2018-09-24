@@ -19,9 +19,20 @@
 
 #----------------------------------------------------------------
 #
+import re
 
 ##### DEVELOP YOUR find_phrase FUNCTION HERE
+def find_phrase(url, phrase) :
 
+    text = open(url);
+    found = re.findall(phrase, text);
+    print(found);
+    text.close();
+    
+   # for line in text :
+       #found = re.findall(phrase, line);
+       #print(found);
+       
 
 #----------------------------------------------------------------
 #

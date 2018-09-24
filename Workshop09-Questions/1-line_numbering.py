@@ -42,7 +42,17 @@
 #
 
 #### DEVELOP YOUR print_with_line_numbers FUNCTION HERE
+def print_with_line_numbers(url):
 
+    text = open(url);
+    count = 0;
+    
+    for line in text:
+        line.rstrip('/n');
+        print(count, str.format(line).rjust(10, ' '), end = "");
+        count += 1;
+        
+    text.close();
 
 #----------------------------------------------------------------
 #
