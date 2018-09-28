@@ -43,7 +43,13 @@ pendown()
 #       single arc, giving it the "angle" variable
 #       and a fixed radius of 250 as arguments
 #    b. Add 20 degrees to the "angle" variable
-pass
+
+angle = 0;
+raduis = 360;
+
+for step in range(18):
+    curve(angle, raduis);
+    angle += 20;
 
 # Tidy up           
 hideturtle()

@@ -28,9 +28,16 @@ from turtle import *
 
 #---------------------------------------------------------
 #
+maxlength = 700;
 
 #### DEFINE YOUR square_spiral FUNCTION HERE
+def square_spiral(steps):
 
+    if steps < maxlength:
+        forward(steps);
+        left(90);
+        square_spiral(steps + 3);
+        
 
 #---------------------------------------------------------
 #
@@ -40,5 +47,5 @@ from turtle import *
 setup()
 title("Square spiral")
 speed("fast")
-# square_spiral(1) # start with a line one pixel long
+square_spiral(1) # start with a line one pixel long
 done()

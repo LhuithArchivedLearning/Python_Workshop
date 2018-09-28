@@ -32,7 +32,7 @@
 
 # Import the necessary functions
 from turtle import *
-from random import randint
+from random import *
 
 # Adjust the drawing speed, if necessary
 speed("fastest")
@@ -51,4 +51,37 @@ speed("fastest")
 #    c. For each position recorded in the list(s), go to that
 #       position, drawing as you go
 # 5. Exit gracefully by unlocking the screen
-done()
+
+setup();
+title('Join the Dots');
+bgcolor('black');
+screen = Screen();
+penup();
+
+dot_list = [];
+
+for star in range(50) :
+    color('white');
+    speed('fastest');
+    coord = randint(-screen.screensize()[0], screen.screensize()[0]), randint(-screen.screensize()[1], screen.screensize()[1]);
+    dot_list.append(coord);
+    goto(coord);
+
+    if star == 0:
+        color("red");
+    else:
+        color("white");
+    
+    dot(uniform(0,3));
+
+penup();
+goto(dot_list[0]);
+
+for step in range(len(dot_list)):
+    pendown();
+    if step != 0 :
+        goto(dot_list[step]);
+    
+print(dot_list);
+hideturtle();
+done();

@@ -23,4 +23,9 @@ from turtle import *
 
 #### Define your function for drawing a curved
 #### shape here
-pass
+
+def curve(heading, raduis):
+    home();
+    setheading(heading);
+    circle(raduis, extent = 70);
+    home();

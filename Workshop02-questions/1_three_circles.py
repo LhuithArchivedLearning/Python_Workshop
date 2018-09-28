@@ -30,13 +30,30 @@ title('Three non-overlapping circles')
 circles = [100, 15, 2];
 
 penup();
-setheading(270);
+#dot(10);
+setheading(90);
 forward(circles[0]);
-setheading(0);
+setheading(180);
 pendown();
 circle(circles[0]);
 
+penup();
+home();
+#dot(10);
+setheading(90);
+forward(circles[0] + circles[1] * 2);
+setheading(180);
+pendown();
+circle(circles[1]);
 
+penup();
+home();
+#dot(10);
+setheading(90);
+forward(circles[0] + circles[1] * 2 + circles[2] * 2);
+setheading(180);
+pendown();
+circle(circles[2]);
     
 
 hideturtle()

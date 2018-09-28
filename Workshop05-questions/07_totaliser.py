@@ -37,4 +37,15 @@
 #
 
 ##### DEVELOP YOUR INTERACTIVE PROGRAM HERE
+running = True;
+counter = 0;
 
+while(running):    
+    inp = input('Please enter a number or "stop" \n');
+    
+    if(inp != 'stop'):
+        counter += eval(inp);
+        print("The total so far is ", counter);
+    else:
+        running = False;
+        

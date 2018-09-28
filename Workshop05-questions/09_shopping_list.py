@@ -27,3 +27,24 @@
 
 ##### DEVELOP YOUR SOLUTION HERE
 
+shopping_list = [];
+running = True;
+
+while (running):
+    grocery = input("Type what item to add, Type 'stop' if finished \n");
+
+    if(grocery == 'stop'):
+        print("Adding Items To Cart");
+        running = False;
+    else:    
+        shopping_list.append(grocery);
+
+shopping_list.sort();
+
+if len(shopping_list) > 0 :
+    print("Items in Shopping List: ");
+    for step in range(len(shopping_list)):
+        print(shopping_list[step]);
+else:
+    print("No Items Were Added");
+

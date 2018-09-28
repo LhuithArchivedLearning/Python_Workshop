@@ -86,10 +86,36 @@
 #---------------------------------------------------------
 
 ##### DEFINE YOUR reply FUNCTION HERE
-pass
+isrunning = True;
+
+def respond (string):
+    global isrunning;
+    
+    if "?" in string :
+        return 'Why do you ask?';
+    elif "!" in string:
+        return "Please don't shout.";
+    elif "sorry" in string:
+        return "Its ok :)";
+    elif "funny" in string:
+        return "thank you, my humor is at 80%";
+    elif "exit" in string or "leave" in string or "escape" in string or "exit" in string or "bye" in string:
+        isrunning = False;
+        return "GoodBye";
+    elif len(string) < 10:
+        return 'Tell me more.';
+    else:
+        return 'What do you mean?';
 
 ##### DEVELOP YOUR INTERACTIVE MAIN PROGRAM HERE
-pass
+print("Hello im Mini-Siri, Please Type Something");
+
+
+while(isrunning):
+    q = input("");
+
+    print(respond(q));
+    
 
 
 #---------------------------------------------------------
@@ -98,7 +124,7 @@ pass
 # run the tests automatically.  Leave this code commented
 # out when developing your interactive main program.
 
-##from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
-##print(testmod(verbose = False,
-##              optionflags = REPORT_ONLY_FIRST_FAILURE))
+from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
+print(testmod(verbose = False,
+              optionflags = REPORT_ONLY_FIRST_FAILURE))
 

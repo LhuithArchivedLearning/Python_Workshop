@@ -61,7 +61,9 @@ True
 #
 
 ### PUT YOUR calculate_distance FUNCTION HERE
-pass
+def calculate_distance(time_taken, avg_speed):
+    hours = time_taken / 60;
+    return avg_speed *hours;
 
 
 #---------------------------------------------------------
@@ -69,7 +71,7 @@ pass
 # file is run.  Uncomment the code below if you want to
 # run the tests automatically.
 
-##from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
-##print(testmod(verbose = False,
-##              optionflags = REPORT_ONLY_FIRST_FAILURE))
+from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
+print(testmod(verbose = False,
+              optionflags = REPORT_ONLY_FIRST_FAILURE))
 

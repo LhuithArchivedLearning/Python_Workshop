@@ -33,23 +33,25 @@ w = 15;
 inner_ring_size = outter_ring_size - w;
 
 def ring(x, y, col) :
-    #outer ring
-    penup();
-    color(col);
     fillcolor(col);
+    color(col);
+    penup();
+
+    #outer ring
     goto(x, y - outter_ring_size/2.0);
     pendown();
-    begin_fill();
+    begin_fill()
     circle(outter_ring_size);
     penup();
+
     #inner ring
     goto(x, y - (outter_ring_size/2.0 - w));
     pendown();
-    circle(inner_ring_size);
+    setheading(180);
+    circle(-inner_ring_size);
     end_fill();
     penup();
-    
-
+    setheading(0);
 #-------------------------------------------------------------------------
 #  Step 2: Calling the function
 #

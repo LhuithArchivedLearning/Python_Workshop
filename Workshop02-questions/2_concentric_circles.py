@@ -44,22 +44,25 @@ setup()
 title('Concentric Circles')
 
 # Define the radii of the three circles, in pixels
-radii = [30, 60, 90]
+#radii = [30, 60, 90]
 
 # Here are some other values you can try
 # by uncommenting one of these lines:
 # radii = [5, 30, 60]
 # radii = [15, 25, 35]
-# radii = [70, 80, 90]
+radii = [70, 80, 90]
 
-for raduis in radii:
+for index in range(len(radii)):
     penup();
     home();
-    goto(raduis, raduis);
+    
+    setheading(270);
+    forward(radii[index]);
+    setheading(0);
+    
     pendown();
-    circle(raduis);
-    home()
-    penup();
+    circle(radii[index]);
+
 
 
 

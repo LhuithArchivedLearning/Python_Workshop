@@ -133,14 +133,8 @@ game4a = ['X', '_', '_']
 game4b = ['O', 'X', 'O']
 game4c = ['_', 'O', 'X']
 
-main = game4a + game4b + game4c;
-print(main);
-
-column = 0;
-
-for i, cell in enumerate(main) :
-    print((i * 4) % len(main) + 3, end = ' ');
-
+for i in range(3):
+    print(game4a[i] + game4b[i] + game4c[i], end ='');
 
 
     

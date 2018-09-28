@@ -37,7 +37,12 @@
 #
 
 ##### DEVELOP YOUR vowels_only FUNCTION HERE
-
+def vowels_only(string):
+    catcher = "";
+    for i in range(len(string)):
+        if string[i] == "a" or string[i] ==  "e"  or string[i] == "i" or string[i] ==  "o" or string[i] == "u":
+            catcher += string[i];
+    return catcher;
 
 
 #---------------------------------------------------------
@@ -45,8 +50,8 @@
 # file is run.  Uncomment the code below if you want to
 # run the tests automatically.
 
-##from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
-##print(testmod(verbose = False,
-##              optionflags = REPORT_ONLY_FIRST_FAILURE))
+from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
+print(testmod(verbose = False,
+              optionflags = REPORT_ONLY_FIRST_FAILURE))
 
 

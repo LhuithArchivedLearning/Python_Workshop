@@ -41,17 +41,15 @@ bgcolor('black')
 penup() # we can draw dots with the pen up
 
 for i, planet in enumerate(name) :
-    setheading(90);
-    if(i != 0) :
-        goto(0, diameter[i] + diameter[i - 1]/2.0);
-    else :
-        goto(0, diameter[i] + diameter[i]/2.0);
+    if i !=0 :
+        forward(diameter[i]//2 + diameter[i - 1]//2);
+    else:
+        forward(0);
         
     color(colour[i]);
     pendown();
     dot(diameter[i]);
     penup();
-    home();
     
     
 

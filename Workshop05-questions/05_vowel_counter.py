@@ -49,7 +49,12 @@ True
 #
 
 ##### DEVELOP YOUR vowel_count FUNCTION HERE
-
+def vowel_count(string):
+    counter = 0;
+    for i in range(len(string)):
+        if string[i] == "a" or string[i] ==  "e"  or string[i] == "i" or string[i] ==  "o" or string[i] == "u":
+            counter += 1;
+    return counter;
 
 
 #---------------------------------------------------------
@@ -57,7 +62,7 @@ True
 # file is run.  Uncomment the code below if you want to
 # run the tests automatically.
 
-##from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
-##print(testmod(verbose = False,
-##              optionflags = REPORT_ONLY_FIRST_FAILURE))
+from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
+print(testmod(verbose = False,
+              optionflags = REPORT_ONLY_FIRST_FAILURE))
 

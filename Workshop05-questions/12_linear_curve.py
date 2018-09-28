@@ -18,8 +18,8 @@
 
 # Import functions required
 from turtle import *
-
-
+import math
+tracer(False);
 #---------------------------------------------------------
 #
 # Suggested solution strategy to complete the linear_curve function:
@@ -32,7 +32,7 @@ from turtle import *
 
 # A function to draw a linear curve
 #
-def linear_curve():
+def linear_curve(pos, reverse = False):
  
     # Set the length of each line
     line_length = 300
@@ -44,14 +44,66 @@ def linear_curve():
     num_lines = line_length // line_sep
 
     ##### COMPLETE THE linear_curve FUNCTION HERE
+    for x in range(num_lines):
+        startpos = pos;
+        color("black");
+        penup();
+        goto(startpos);
+        goto(x * line_sep + startpos[0], 0 + startpos[1]);
+        dot(2);
+        pendown();
+        goto(0 + startpos[0], 300 - (x * line_sep) + startpos[1]); 
+        penup();
+        goto(startpos);
 
-    
+        penup();
+        goto(startpos);
+        goto(0 + startpos[0], x * line_sep + startpos[1]);
+        dot(2);
+        pendown();
+        goto(300 - (x * line_sep) + startpos[0], 0 + startpos[1]); 
+        penup();
+        goto(startpos);
+
+        startpos2 = 200, -300;
+        penup();
+        goto(startpos2);
+        goto(((x * line_sep) * -1)  + startpos2[0], 0 + startpos2[1]);
+        dot(2);
+        pendown();
+        goto(0 + startpos2[0], 300 - (x * line_sep) + startpos2[1]); 
+        penup();
+        goto(startpos2);
+
+        startpos3 = 200, -300;
+        penup();
+        goto(startpos2);
+        goto(0 + startpos3[1], ((x * line_sep) * -1)  + startpos3[0]);
+        dot(2);
+        pendown();
+        goto(300 + ((x * line_sep) * -1) + startpos3[1], 0 + startpos3[0]); 
+        penup();
+        goto(startpos3);
+
+        startpos3 = 200, 200;
+        penup();
+        goto(startpos2);
+        goto(0 + startpos3[1], ((x * line_sep) * -1)  + startpos3[0]);
+        dot(2);
+        pendown();
+        goto(-300 - ((x * line_sep) * -1) + startpos3[1], 0 + startpos3[0]); 
+        penup();
+        goto(startpos3);
+
+            
+             
 #---------------------------------------------------------
 # Main program to call your linear_curve function
 #
 setup()
 title("Linear curve")
 speed('fastest')
-linear_curve()
+linear_curve([-300, -300]);
+
 hideturtle()
 done()

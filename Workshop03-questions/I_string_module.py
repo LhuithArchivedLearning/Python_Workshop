@@ -96,7 +96,8 @@ Part 3: Tests for the replace_stops function
 # built-in "upper" method for strings.)
 
 #### DEFINE YOUR convert_to_upper FUNCTION HERE
-pass
+def convert_to_upper(string):
+    return string.upper();
 
 
 #---------------------------------------------------------
@@ -106,7 +107,8 @@ pass
 # "replace" method for strings.)
 
 #### DEFINE YOUR remove_spaces FUNCTION HERE
-pass
+def remove_spaces(string):
+    return string.replace(" ", "");
 
 
 #---------------------------------------------------------
@@ -115,7 +117,8 @@ pass
 # replaced with the word 'STOP'.
 
 #### DEFINE YOUR replace_stops FUNCTION HERE
-pass
+def replace_stops(string):
+    return string.replace(".", "STOP");
 
 
 #---------------------------------------------------------
@@ -125,7 +128,7 @@ pass
 # Uncomment the code below if you want to run the tests
 # automatically.
 
-##if __name__ == '__main__':
-##    from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
-##    print(testmod(verbose = False,
-##                  optionflags = REPORT_ONLY_FIRST_FAILURE))
+if __name__ == '__main__':
+    from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
+    print(testmod(verbose = False,
+                 optionflags = REPORT_ONLY_FIRST_FAILURE))

@@ -90,17 +90,15 @@ for step in range(num_steps):
   # Move to the next position (overlapping the previous step a little)
   forward(segment_size - overlap)
   # Draw the next segment
-  #stamp()0
-  steps.append(step);
+  #stamp()
+  #steps.append(step);
   snake_segments.append(stamp());
-  snake_segments.remove(snake_segments[len(snake_segments) - 1]);
+  
   clearstamp(snake_segments[0]);
-
-
-
+  snake_segments.remove(snake_segments[0]);
 
 print(snake_segments);
-print(steps);
+#print(steps);
 # Exit gracefully
 hideturtle()
 done()

@@ -17,6 +17,9 @@
 # point if you're stuck.
 #
 
+colors = ["blue", "green", "yellow", "red", "orange", "purple"];
+             
+
 # Import the function to draw stars (make sure a copy of file
 # flag_elements.py is in the same folder as this one)
 from flag_elements import star
@@ -27,9 +30,14 @@ from random import *
 
 # Set the drawing speed, if necessary
 speed("fastest")
+penup();
 
 ## DEVELOP YOUR SOLUTION HERE
-pass
+for step in range(100) :
+    color('black');
+    speed('fastest');
+    goto(randint(-Screen().screensize()[0], Screen().screensize()[0]), randint(-Screen().screensize()[1], Screen().screensize()[1]));
+    star(uniform(1, 10), colors[int(uniform(0, len(colors) - 1))]);
 
 # Exit gracefully
 hideturtle()

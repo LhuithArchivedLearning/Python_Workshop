@@ -65,7 +65,12 @@ from time import sleep
 # of the game's state here
 #
 # *** INTRODUCE GLOBAL VARIABLES NEEDED TO CONTROL THE GAME HERE
-
+wacked = False;
+mole_spinning = True;
+mole_digging = True;
+wacks = 0;
+wackStreak = 1;
+score = 0;
 
 #-----------------------------------------------------------
 # Introduce global constants needed to control the game's
@@ -119,33 +124,40 @@ def near_mole(x_coord, y_coord):
 # This function defines the behaviour of the mole
 #
 def move_mole():
-    pass # does nothing (delete after inserting your code)
-    
     # *** DECLARE ANY GLOBAL VARIABLES YOU NEED HERE
     # global 
-
+    global mole_digging;
+    global wacked;
+    global wackStreak;
+    
+    wacked = False;
+    spins = 0;
     # Move to a random location
     new_x, new_y = randint(-max_x, max_x), randint(-max_y, max_y)
     goto(new_x, new_y)
-
     # Spin a certain number of times or until the player clicks
     # the mouse in the window
-
+    
     # *** ADD A WHILE LOOP HERE THAT CAUSES THE MOLE TO SPIN
     # *** UP TO A FIXED NUMBER OF TIMES OR UNTIL THE MOUSE
     # *** HAS BEEN CLICKED
     
+    while(spins < num_spins and not(wacked)):
+        mole_digging = True;
+        spin_around();
+        spins += 1;
+    
+
+    mole_digging = False;
     # Decide what action to take at the end of an attempt to
     # dig a hole
-
-    # *** ADD CODE HERE TO EITHER SAY "OUCH" OR COMPLETE THE
-    # *** HOLE AS APPROPRIATE
+    if not(wacked):
+        dig_hole();
+        wackStreak = 1;
 
     # Reset global variables for next hole
-
     # *** RESET ANY GLOBAL VARIABLES YOU USED, READY FOR THE
     # *** MOLE'S NEXT ATTEMPT TO DIG A HOLE
-    
     
 #-----------------------------------------------------------
 # This function is called automatically by the Turtle system
@@ -155,13 +167,25 @@ def move_mole():
 # player's attempt to whack the mole was
 #
 def whack(x_coord, y_coord):
-    pass # does nothing (delete after inserting your code)
     
-    # *** DECLARE ANY GLOBAL VARIABLES YOU NEED HERE
-    # global
+    global mole_digging;
+    global wacked;
+    global wacks;
+    global score;
+    global wackStreak;
     
-    # *** UPDATE GLOBAL VARIABLES HERE TO RECORD THE "WHACK"
-    # *** AND WHETHER IT SUCCEEDED OR NOT
+    if near_mole(x_coord, y_coord) and mole_digging:
+        wacked = True;
+        mole_digging = False;
+        say_ouch();
+        wacks += 1;
+        score += (100) * wackStreak;
+        wackStreak += 1;
+    else :
+        wackStreak = 1;
+        wacked = False;
+
+    title("Whack-A-Mole " + str(score))
 
 
 #-----------------------------------------------------------
@@ -170,7 +194,7 @@ def whack(x_coord, y_coord):
 
 # Set up the drawing screen
 setup(max_screen_x * 2, max_screen_y * 2)
-title("Whack-A-Mole")
+title("Whack-A-Mole " + str(score))
 bgcolor("light green")
 
 # Create a "realistic" looking mole
@@ -188,6 +212,8 @@ onscreenclick(whack)
 # fixed number of times
 
 # *** ADD A FIXED LOOP HERE TO MOVE THE MOLE SEVERAL TIMES
+for i in range(100):
+    move_mole();
 
 # Terminate the game elegantly
 hideturtle()

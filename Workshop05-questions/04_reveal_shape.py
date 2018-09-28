@@ -92,5 +92,14 @@ circle = [[' ', 4],
 
 ##### PUT YOUR CODE TO PRINT THE SHAPE ENCODED IN EACH DATA SET BELOW
 
+def create_shape(data_list):
+    for index in range(len(data_list)):
+        steps = int(data_list[index][1]);
+        for i in range(steps):
+            print(data_list[index][0], end = '');
 
-
+create_shape(rectangle);
+print(" ");
+create_shape(triangle);
+print(" ");
+create_shape(circle);

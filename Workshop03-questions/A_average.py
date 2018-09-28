@@ -37,7 +37,7 @@
 9.75
 
 >>> average(5, 5) # Test 4 - same values
-3.0
+5.0
 
 >>> average(0, 0) # Test 5 - boundary case
 0.0
@@ -54,7 +54,10 @@
 #### REPLACE THE "DO NOTHING" STATEMENT BELOW
 ##### WITH YOUR average FUNCTION DEFINITION
 def average(num0, num1):
-    return (num0 + num1) / 2.0;
+    if num0 != num1 :
+        return (num0 + num1) / 2;
+    else :
+       return float(num0);
 
 #---------------------------------------------------------
 # This main program executes all the tests above when this

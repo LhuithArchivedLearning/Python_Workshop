@@ -54,7 +54,8 @@
 #
 
 #### DEFINE YOUR cube FUNCTION HERE
-pass
+def cube(val):
+     return val ** 3;
 
 
 #---------------------------------------------------------
@@ -62,6 +63,6 @@ pass
 # file is run.  Uncomment the code below if you want to
 # run the tests automatically.
 
-##from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
-##print(testmod(verbose = False,
-##              optionflags = REPORT_ONLY_FIRST_FAILURE))
+from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
+print(testmod(verbose = False,
+              optionflags = REPORT_ONLY_FIRST_FAILURE))

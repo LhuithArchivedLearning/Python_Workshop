@@ -56,14 +56,21 @@
 #
 
 ##### DEVELOP YOUR count_divisors FUNCTION HERE
-
+def count_divisors(value):
+    count = 1;
+    for n in range(value):
+        if n != 0 :
+            if value % n == 0 :
+                count += 1;
+    
+    return count;
 
 
 #---------------------------------------------------------
 # This main program executes the tests above when this
 # file is run.
 #
-##from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
-##print(testmod(verbose = False,
-##              optionflags = REPORT_ONLY_FIRST_FAILURE))
+from doctest import testmod, REPORT_ONLY_FIRST_FAILURE
+print(testmod(verbose = False,
+              optionflags = REPORT_ONLY_FIRST_FAILURE))
 

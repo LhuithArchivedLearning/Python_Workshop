@@ -55,8 +55,8 @@ from turtle import *
 # number between function calls for the "extra challenge".
 
 ########## PUT YOUR CODE HERE ##########
-pass
-
+num_dots = 0;
+tracer(False);
 
 #-----
 # Define a function that will be called whenever the mouse
@@ -66,8 +66,15 @@ pass
 # coordinates where the mouse click occurred.
 
 ########## PUT YOUR CODE HERE ##########
-pass
-
+def dot_mouse(x, y):
+    global num_dots;
+    
+    goto(x,y);
+    dot(10);
+    print("click");
+    num_dots +=1;
+    write(str(num_dots));
+    
 
 #-----
 # The main program which binds mouse events to the two functions
@@ -77,7 +84,7 @@ title("World's Easiest Join-the-Dots Puzzle")
 
 ########## ADD CODE AS NEEDED TO THIS MAIN PROGRAM ##########
 
-# onscreenclick(...) # Bind your function to mouse clicks
+onscreenclick(dot_mouse) # Bind your function to mouse clicks
 
 done() # Allow the drawing window to be closed gracefully
 
