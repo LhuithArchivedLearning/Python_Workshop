@@ -50,6 +50,10 @@
 # either directly or via our "download" function.)
 from urllib.request import urlopen
 
+#Dirty Dirty Approuch To fix Security Issues
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 # Import the standard Tkinter functions. (You WILL need to use
 # these functions in your solution.)
 from tkinter import *
@@ -187,7 +191,7 @@ def AcessBookInformation(downloadsource = False):
     return booktitles;
 
 def AccessMusicInformation(downloadsource = False):
-    #http://www.bbc.co.uk/radio1/chart/singles
+    #https://www.billboard.com/charts/pop-songs
 
     musictopdownload = "";
     html_file = "";
@@ -255,7 +259,7 @@ window.title("Spicy Data");
 window.geometry("600x300");
 
 BookInformation = AcessBookInformation(False);
-MusicInformation = AccessMusicInformation(False);
+MusicInformation = AccessMusicInformation(True);
 ElectronicInformation = AccessElectronicInformation(False);
 
 #Setting it up
@@ -271,36 +275,36 @@ img = PhotoImage(file = "images/tenor.gif");
 ChillImageLabel = Label(leftFrame, image = img).grid(row = 0, column = 0);
 
 
-MostReadFrame = LabelFrame(rightFrame, text="Most Read Books", width = 200, height = 3, borderwidth = 1, relief = GROOVE);
+MostReadFrame = LabelFrame(rightFrame, text="Most Read Books", width = 25, height = 3, borderwidth = 1, relief = GROOVE);
 MostReadFrame.grid(row=0,column=0, padx=0,pady=0, sticky=N);
 
-MostListenedPreviousRadial = Radiobutton(MostReadFrame, text="Previous", width = 5);
+MostListenedPreviousRadial = Radiobutton(MostReadFrame, text="Previous", width = 10);
 MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(0, 0), pady=(0, 0));
 
-MostListenedCurrentRadial= Radiobutton(MostReadFrame, text="Current", width = 5);
+MostListenedCurrentRadial= Radiobutton(MostReadFrame, text="Current", width = 10);
 MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(0, 0), pady=(0, 0));
 
-MostListenframe = LabelFrame(rightFrame, text="Most Listened To Music", width = 200, height =3, borderwidth = 1, relief = GROOVE);
+MostListenframe = LabelFrame(rightFrame, text="Most Listened To Music", width = 25, height =3, borderwidth = 1, relief = GROOVE);
 MostListenframe.grid(row=1,column=0, padx=0,pady=0, sticky=N);
 
-MostListenedPreviousRadial = Radiobutton(MostListenframe, text="Previous", width = 5);
+MostListenedPreviousRadial = Radiobutton(MostListenframe, text="Previous", width = 10);
 MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(0, 0), pady=(0, 0));
 
-MostListenedCurrentRadial= Radiobutton(MostListenframe, text="Current", width = 5);
+MostListenedCurrentRadial= Radiobutton(MostListenframe, text="Current", width = 10);
 MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(0, 0), pady=(0, 0));
 
-MostBoughtFrame = LabelFrame(rightFrame, text="Most Bought Electronics", width = 200, height =3, borderwidth = 1, relief = GROOVE);
+MostBoughtFrame = LabelFrame(rightFrame, text="Most Bought Electronics", width = 25, height =3, borderwidth = 1, relief = GROOVE);
 MostBoughtFrame.grid(row=2,column=0, padx=0,pady=0, sticky=N);
 
-MostListenedPreviousRadial = Radiobutton(MostBoughtFrame, text="Previous", width = 5);
+MostListenedPreviousRadial = Radiobutton(MostBoughtFrame, text="Previous", width = 10);
 MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(0, 0), pady=(0, 0));
 
-MostListenedCurrentRadial= Radiobutton(MostBoughtFrame, text="Current", width = 5);
+MostListenedCurrentRadial= Radiobutton(MostBoughtFrame, text="Current", width = 10);
 MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(0, 0), pady=(0, 0));
 #PreviewButton.bind('<Button>', Test());
-#DisplayInformation(BookInformation);
-#DisplayInformation(MusicInformation);
-#DisplayInformation(ElectronicInformation);
+DisplayInformation(BookInformation);
+DisplayInformation(MusicInformation);
+DisplayInformation(ElectronicInformation);
 
 
 
