@@ -198,13 +198,13 @@ def AccessMusicInformation(downloadsource = False):
     
     if downloadsource:
         print("Downloading......");
-        musictopdownload = download("http://www.bbc.co.uk/radio1/chart/singles", "download/musictopdownload");
+        musictopdownload = download("https://kworb.net/pop/", "download/musictopdownload");
     else:
         print("Accessing From Archive");
         html_file = open("Archived/musictopdownload.html", 'r', encoding='utf-8');
         musictopdownload = html_file.read();
         
-    musictitles = findall('<div class="cht-entry-title">(.*?)</div>', musictopdownload);
+    musictitles = findall('text"><div>(.*?)</div>', musictopdownload);
     del musictitles[10:];
     musicindex = findall('<div class="cht-entry-position">(.*?)</div>', musictopdownload);
     #PrintInformation(musictitles);
