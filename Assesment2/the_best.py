@@ -48,7 +48,7 @@
 # The function for opening a web document given its URL.
 # (You WILL need to use this function in your solution,
 # either directly or via our "download" function.)
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 
 #Dirty Dirty Approuch To fix Security Issues
 import ssl
@@ -98,7 +98,8 @@ def download(url = 'http://www.wikipedia.org/',
 
     # Open the web document for reading
     try:
-        web_page = urlopen(url)
+        req = Request(url, headers={'User-Agent': 'Mozilla/5.0'});
+        web_page = urlopen(req)
     except ValueError:
         raise Exception("Download error - Cannot find document at URL '" + url + "'")
     except HTTPError:
@@ -191,23 +192,23 @@ def AcessBookInformation(downloadsource = False):
     return booktitles;
 
 def AccessMusicInformation(downloadsource = False):
-    #https://www.billboard.com/charts/pop-songs
+    #https://spotifycharts.com/regional/global/weekly/latest
 
     musictopdownload = "";
     html_file = "";
     
     if downloadsource:
         print("Downloading......");
-        musictopdownload = download("https://kworb.net/pop/", "download/musictopdownload");
+        musictopdownload = download("https://spotifycharts.com/regional/global/weekly/latest", "download/musictopdownload");
     else:
         print("Accessing From Archive");
         html_file = open("Archived/musictopdownload.html", 'r', encoding='utf-8');
         musictopdownload = html_file.read();
         
-    musictitles = findall('text"><div>(.*?)</div>', musictopdownload);
+    musictitles = findall('<td class="chart-table-track">(.*?)</td>', musictopdownload);
     del musictitles[10:];
     musicindex = findall('<div class="cht-entry-position">(.*?)</div>', musictopdownload);
-    #PrintInformation(musictitles);
+    PrintInformation(musictitles);
 
     #Close File Read if were not downloading
     if not(downloadsource):
@@ -259,7 +260,7 @@ window.title("Spicy Data");
 window.geometry("600x300");
 
 BookInformation = AcessBookInformation(False);
-MusicInformation = AccessMusicInformation(True);
+MusicInformation = AccessMusicInformation(False);
 ElectronicInformation = AccessElectronicInformation(False);
 
 #Setting it up
@@ -302,9 +303,9 @@ MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(0, 0), pady=(0, 0));
 MostListenedCurrentRadial= Radiobutton(MostBoughtFrame, text="Current", width = 10);
 MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(0, 0), pady=(0, 0));
 #PreviewButton.bind('<Button>', Test());
-DisplayInformation(BookInformation);
-DisplayInformation(MusicInformation);
-DisplayInformation(ElectronicInformation);
+#DisplayInformation(BookInformation);
+#DisplayInformation(MusicInformation);
+#DisplayInformation(ElectronicInformation);
 
 
 
