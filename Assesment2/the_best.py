@@ -133,7 +133,32 @@ def download(url = 'http://www.wikipedia.org/',
 #
 #--------------------------------------------------------------------#
 
+def access_site(url = 'http://www.wikipedia.org/'):
+        # Import an exception raised when a web server denies access
+    # to a document
+    from urllib.error import HTTPError
 
+    # Open the web document for reading
+    try:
+        req = Request(url, headers={'User-Agent': 'Mozilla/5.0'});
+        web_page = urlopen(req)
+    except ValueError:
+        raise Exception("Download error - Cannot find document at URL '" + url + "'")
+    except HTTPError:
+        raise Exception("Download error - Access denied to document at URL '" + url + "'")
+    except:
+        raise Exception("Download error - Something went wrong when trying to download " + \
+                        "the document at URL '" + url + "'")
+
+    # Read its contents as a Unicode string
+    try:
+        web_page_contents = web_page.read().decode('UTF-8')
+    except UnicodeDecodeError:
+        raise Exception("Download error - Unable to decode document at URL '" + \
+                        url + "' as Unicode text")
+
+    # Return the downloaded document to the caller
+    return web_page_contents
 
 #-----Student's Solution---------------------------------------------#
 #
@@ -142,16 +167,21 @@ def download(url = 'http://www.wikipedia.org/',
 
 ##### DEVELOP YOUR SOLUTION HERE #####
 
-def CleanUpWhiteSpace(text):
-        for i in range(len(text)):
-            text[i] = text[i].strip();
-        return text;
+def clean_white_spaces(text):
+    for i in range(len(text)):
+        text[i] = text[i].strip();
+    return text;
+    
+def extract_numbers(text):
+    for i in range(len(text)):
+        text[i] = findall('[\d.]*\d+', text[i]);
+    return text;
 
 #using this as a text scrub to remove anything i dont want in text(&quot)
-def GeneralCleanUp(text):
+def general_clean_up(text, phrase = " ", replace_to = ""):
 
     for i in range(len(text)):
-        text[i] = text[i].replace("&quot", "");
+        text[i] = text[i].replace(phrase, replace_to);
     return text;
 
 def PrintInformation(InformationBlock, limit = 10):
@@ -162,6 +192,27 @@ def PrintInformation(InformationBlock, limit = 10):
             print(InformationBlock[i]);
     print("#-----------------------------------------#");
 
+#merge data into 1 node to access
+def create_list_data(data = []):
+    newdata = []
+
+    #choosing the length of the first array (hopefully there the same size)
+    #will put security measures and clip lists sizes incase of futures bugs
+
+    #0 should be titles/name
+    #1 should be index
+    #2 should be image url
+    #3 will be a wildcard, watever is thrown in (rateings, viewings, watever else)
+    for i in range(len(data[0])):
+            newdata.append([str(data[1][i]), data[0][i], data[3][i], data[2][i]]);
+                       
+    return newdata;
+
+def add_to_list_item(data, string):
+
+    for i in range(len(data)):
+        data[i] = data[i] + string;
+    return data;
 
 #download from source, or access archive
 def AcessBookInformation(downloadsource = False):
@@ -171,25 +222,40 @@ def AcessBookInformation(downloadsource = False):
     html_file = "";
     
     if downloadsource:
-        print("Downloading......");
-        bookreadingdownload = download("https://www.goodreads.com/book/most_read", "download/bookreadingdownload");
+        print("Accessing......");
+        bookreadingdownload = access_site("https://www.goodreads.com/book/most_read");
     else:
         print("Accessing From Archive");
         html_file = open("Archived/bookreadingdownload.html", 'r', encoding='utf-8');
         bookreadingdownload = html_file.read();
         
     booktitles = findall("<span itemprop='name'>(.*?)</span>", bookreadingdownload);
-
-    #clean up and remove titles past 10
-    del booktitles[10:];
     bookindex = findall('<td valign="top" class="number">(.*?)</td>', bookreadingdownload);
-    #PrintInformation(booktitles);
+    bookimg = findall('itemprop="image" src="(.*?)" />', bookreadingdownload);
+    bookrating = findall('</span> (.*?) &mdash;', bookreadingdownload, DOTALL);
+
+
+    bookfinal = create_list_data([booktitles, bookindex, bookimg, bookrating]);
+    
+    #clip list to only 10
+    del bookfinal[10:];
+    
+    #PrintInformation(bookfinal);
 
     #Close File Read if were not downloading
     if not(downloadsource):
         html_file.close();
 
-    return booktitles;
+    return bookfinal;
+
+#Combinging two lists (music titles and artist name in this case), can be expanded incase needed again
+def concatenate_lists(listA, listB):
+    newlist = []
+    for i in range(len(listA)):
+        if i > 0:
+            if i < len(listB):
+                newlist.append(listA[i] + ' -' + listB[i].replace("by",""));
+    return newlist;
 
 def AccessMusicInformation(downloadsource = False):
     #https://spotifycharts.com/regional/global/weekly/latest
@@ -198,23 +264,36 @@ def AccessMusicInformation(downloadsource = False):
     html_file = "";
     
     if downloadsource:
-        print("Downloading......");
-        musictopdownload = download("https://spotifycharts.com/regional/global/weekly/latest", "download/musictopdownload");
+        print("Accessing......");
+        musictopdownload = access_site("https://spotifycharts.com/regional/global/weekly/latest");
     else:
         print("Accessing From Archive");
         html_file = open("Archived/musictopdownload.html", 'r', encoding='utf-8');
         musictopdownload = html_file.read();
         
-    musictitles = findall('<td class="chart-table-track">(.*?)</td>', musictopdownload);
-    del musictitles[10:];
-    musicindex = findall('<div class="cht-entry-position">(.*?)</div>', musictopdownload);
-    PrintInformation(musictitles);
+    musictitlesraw = findall('<td class="chart-table-track">(.*?)</td>', musictopdownload, DOTALL);
 
+    musictitles = findall('<strong>(.*?)</strong>', musictopdownload);
+    musicartistname = findall('<span>(.*?)</span>', musictopdownload);
+
+    track = concatenate_lists(musictitles, musicartistname);
+    musicindex = findall('<td class="chart-table-position">(.*?)</td>', musictopdownload);
+    musicimg = findall('<img src="(.*?)">', musictopdownload, DOTALL);
+    musicstreams = findall('<td class="chart-table-streams">(.*?)</td>', musictopdownload);
+
+    #musicstreams = add_to_list_item(musicstreams, " streams");
+    
+    musicfinal = create_list_data([track, musicindex, musicimg, musicstreams]); 
+    
+    #clip the list
+    del musicfinal[10:];
+    #PrintInformation(musicfinal);                             
+   
     #Close File Read if were not downloading
     if not(downloadsource):
         html_file.close();
         
-    return musictitles;
+    return musicfinal;
     
 def AccessElectronicInformation(downloadsource = False):
     #https://www.amazon.com/Best-Sellers-Electronics/zgbs/electronics
@@ -222,50 +301,135 @@ def AccessElectronicInformation(downloadsource = False):
     html_file = "";
     
     if downloadsource :
-        print("Downloading......");
-        electronicstopsaledownload = download("https://www.amazon.com/Best-Sellers-Electronics/zgbs/electronics", "download/electronicstopsaledownload");
+        print("Accessing......");
+        electronicstopsaledownload = access_site("https://www.amazon.com/Best-Sellers-Electronics/zgbs/electronics");
     else:
         print("Accessing From Archive");
         html_file = open("Archived/electronicstopsaledownload.html", 'r', encoding='utf-8');
         electronicstopsaledownload = html_file.read();
 
 
-    electronicstopsaletitle = findall('<div class="p13n-sc-truncate p13n-sc-line-clamp-2" aria-hidden="true" data-rows="2">(.*?)</div>', electronicstopsaledownload, DOTALL);
-    electronicstopsaletitle = CleanUpWhiteSpace(electronicstopsaletitle);
-    electronicstopsaletitle = GeneralCleanUp(electronicstopsaletitle);
-    del electronicstopsaletitle[10:];
-    electronicstopsaleindex = findall('<span class="zg-badge-text">(.*?)</span>', electronicstopsaledownload);
-    #PrintInformation(electronicstopsaletitle);
+    electronicstopsaletitle = findall('data-rows="2">(.*?)</div>', electronicstopsaledownload, DOTALL);
+
+    #titles were a mess, cleaning up white spaces and anything else in there we dont need
+    #will need to fix long ass name issue
+    electronicstopsaletitle = clean_white_spaces(electronicstopsaletitle);
+    electronicstopsaletitle = general_clean_up(electronicstopsaletitle, "&quot", "");
+
+    electronicstopsaleindex = findall('<span class="zg-badge-text">(.*?)</span></span><span ', electronicstopsaledownload);
+    electronicstopsaleindex = general_clean_up(electronicstopsaleindex, "#", "");
+
+    electronicstopsaleimg = findall('src="(.*?)" height="200" width="200">', electronicstopsaledownload);
+    elecontricstopsalerateing = findall(r"<span class='p13n-sc-price'>(.*?)</span></span></a>", electronicstopsaledownload);
+    
+    electronicstopsalefinal = create_list_data([electronicstopsaletitle, electronicstopsaleindex, electronicstopsaleimg, elecontricstopsalerateing]);
+
+    
+    del electronicstopsalefinal[10:];
+   
+    #PrintInformation(electronicstopsalefinal);
 
     #Close File Read if were not downloading
     if not(downloadsource):
         html_file.close();
 
-    return electronicstopsaletitle;
+    return electronicstopsalefinal;
 
-def Test():
-    print("Poo");
+def export_to_html(target_filename, information, title, wildcardtitle):
+        basic_html = ""
+        
+        basic_html +="""
+        <!DOCTYPE html>
+        <html>
+        <body>
 
-def DisplayInformation(information):
+        <style>
+        img{
+            max-width: 150px;
+        }
+        h2{
+            text-align: center;
+        }
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        #cntr{
+        text-align: center;
+        }
+        </style>
+        """
+        
+        basic_html += "<h2>"+title+"</h2>";
+        
+        basic_html +="""
+        <table>
+        <tr>
+        <th id='cntr'># on List</th>
+        <th id='cntr'>Image</th>
+        <th>Title</th>
+        """
+        basic_html +="<th>"+wildcardtitle+"</th>"
+        basic_html +="</tr>"
+        
+        for i in range(len(information)):
+            basic_html += "<tr>"
+            basic_html += "<td id='cntr'>"+ information[i][0] + "</td>"
+            basic_html += "<td id='cntr'>" + "<img " + "src=" + information[i][3] + ">" + "</td>"
+            basic_html += "<td>"+ information[i][1] + "</td>"
+            basic_html += "<td>"+ information[i][2] + "</td>"
+            basic_html += "</tr>";
+        basic_html +="""
+        </table>  
+        </body>
+        </html>  
+        """
+        
+        #new_html.replace("<information>", "");
+        text_file = open(target_filename + '.' + "html",
+                         'w', encoding = 'UTF-8')
+        text_file.write(basic_html);
+        text_file.close()
+
+def display_information(information, windowimage, title):
     new_window = Toplevel(window);
+    new_window.geometry("700x300");
+    
+    #Setting it up
+    leftFrame = Frame(new_window, width = 200, height = 600);
+    leftFrame.grid(row=0,column=0, padx=10,pady=2);
 
-    displayLabel = Label(new_window, font = ('Ariel', 12), justify=LEFT);
-    displayLabel.grid(row=1, column=2)
+    rightFrame = Frame(new_window, width = 100, height = 5, borderwidth = 5);
+    rightFrame.grid(row=0,column=1, padx=0,pady=0);
+
+    ImageLabel = Label(leftFrame, image = windowimage).grid(row = 0, column = 0);
+    
+    MostReadFrame = LabelFrame(rightFrame, text=title, width = 100);
+    MostReadFrame.grid(row=0,column=0, padx=0,pady=0);
+
+    displayLabel = Label(MostReadFrame, justify = LEFT);
+    displayLabel.grid(row = 0, column = 0);
 
     for i in range(len(information)):
-        displayLabel["text"] += "["+str(i + 1)+"]" +"  "+ (information[i] + "\n")
+        displayLabel["text"] += "["+str(i + 1)+"]" +"  "+ (information[i][1] + "\n")
         
 window = Tk();
 window.title("Spicy Data");
-window.geometry("600x300");
+window.geometry("700x300");
 
-BookInformation = AcessBookInformation(False);
-MusicInformation = AccessMusicInformation(False);
-ElectronicInformation = AccessElectronicInformation(False);
+BookInformation = AcessBookInformation(True);
+MusicInformation = AccessMusicInformation(True);
+ElectronicInformation = AccessElectronicInformation(True);
 
 #Setting it up
-
-
 leftFrame = Frame(window, width = 200, height = 600);
 leftFrame.grid(row=0,column=0, padx=10,pady=2);
 
@@ -303,9 +467,16 @@ MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(0, 0), pady=(0, 0));
 MostListenedCurrentRadial= Radiobutton(MostBoughtFrame, text="Current", width = 10);
 MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(0, 0), pady=(0, 0));
 #PreviewButton.bind('<Button>', Test());
-#DisplayInformation(BookInformation);
-#DisplayInformation(MusicInformation);
-#DisplayInformation(ElectronicInformation);
 
+bookimg = PhotoImage(file = "images/book.gif");
+musicimg = PhotoImage(file = "images/music.gif");
+electronicimg = PhotoImage(file = "images/electronics.gif");
 
+display_information(BookInformation,bookimg, "Most Read Books");
+display_information(MusicInformation,musicimg, "Most Streamed Music");
+display_information(ElectronicInformation,electronicimg, "Most Bought Electronics");
+
+export_to_html("Export/BooksRead", BookInformation, "Most Read Books", "Ratings"); 
+export_to_html("Export/MusicStreamed", MusicInformation, "Most Streamed Music", "Streamed");
+export_to_html("Export/ElectronicsBought", ElectronicInformation, "Most Bought Electronics", "Price");
 
