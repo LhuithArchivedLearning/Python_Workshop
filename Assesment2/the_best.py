@@ -367,7 +367,7 @@ def AccessElectronicInformation(downloadsource = False):
         electronicstopsaledownload = html_file.read();
 
 
-    electronicstopsaletitle = findall('data-rows="2">(.*?)</div>', electronicstopsaledownload, DOTALL);
+    electronicstopsaletitle = findall('aria-hidden="true" data-rows=".*?">(.*?)</div>', electronicstopsaledownload, DOTALL);
 
     #titles were a mess, cleaning up white spaces and anything else in there we dont need
     #will need to fix long ass name issue
@@ -377,9 +377,10 @@ def AccessElectronicInformation(downloadsource = False):
     electronicstopsaletitle = general_clean_up(electronicstopsaletitle, "&quot", '"');
     electronicstopsaletitle = find_and_clean(r'\([^()]*\)', electronicstopsaletitle);
     electronicstopsaletitle = find_and_clean(r'\|.*$', electronicstopsaletitle);
-   # electronicstopsaletitle = find_and_clean(r'\-.*$', electronicstopsaletitle);
+    #electronicstopsaletitle = find_and_clean(r'\-.*$', electronicstopsaletitle);
     electronicstopsaletitle = find_and_clean(r'\,.*$', electronicstopsaletitle);
     electronicstopsaletitle = find_and_clean(r'\;.*$', electronicstopsaletitle);
+    electronicstopsaletitle = find_and_clean(r'\&ndash.*$', electronicstopsaletitle);
     #--------Grabbing Electornic Item Title------------------#
 
     #--------Grabbing Electornic Item Index ------------------#
@@ -388,7 +389,7 @@ def AccessElectronicInformation(downloadsource = False):
     #--------Grabbing Electornic Item Index ------------------#
 
     #--------Grabbing Electornic Item Image ------------------#
-    electronicstopsaleimg = findall('src="(.*?)" height="200" width="200"></div></span>', electronicstopsaledownload);
+    electronicstopsaleimg = findall('<div class="a-section a-spacing-small"><img alt=".*?" src="(.*?)" height="200" width="200"></div></span>', electronicstopsaledownload);
 
     #--------Grabbing Electornic Item price ------------------#
     elecontricstopsalerateing = findall(r"<span class='p13n-sc-price'>(.*?:|.*?)</span></span></a>", electronicstopsaledownload);
@@ -401,8 +402,8 @@ def AccessElectronicInformation(downloadsource = False):
     
     #clip list to 10 items
     del electronicstopsalefinal[10:];
-    print(electronicstopsalefinal, end ="");
-    PrintInformation(electronicstopsalefinal);
+    #print(electronicstopsalefinal, end ="");
+    #PrintInformation(electronicstopsalefinal);
 
     #Close File Read if were not downloading
     if not(downloadsource):
@@ -604,7 +605,7 @@ def save_to_database(information, date):
 #creates new window and display the informations            
 def display_information(information, windowimage, title):
     new_window = Toplevel(window);
-    new_window.geometry("750x300");
+    new_window.geometry("800x300");
     new_window.configure(background='white');
     
     #-----------------------------Image--------------------------------------------#
@@ -640,15 +641,16 @@ def display_information(information, windowimage, title):
     #------------Data --------------------------------------------#
 
     #-------------Title --------------------------------------------#
-    titleLabel = Label(MostReadFrame, text=title, width = 25, height = 1, font='Helvetica 18 bold');
+    titleLabel = Label(MostReadFrame, text=title, width = 30, height = 1, font='Helvetica 18 bold');
     titleLabel.grid(row=0,column=1, padx=0,pady=0, sticky=NSEW);
     titleLabel.configure(background='white');
     #-------------Title --------------------------------------------#
 
     #----------Adding List Infomration to there Text Boxes--------------------------#
+    maxstringlength = 40;
     for i in range(len(information)):
-        if len(information[i][1]) > 40:
-            information[i][1] = information[i][1][:40];
+        if len(information[i][1]) > maxstringlength:
+            information[i][1] = information[i][1][:maxstringlength];
             information[i][1]+=("...");
 
         displayLabel.insert(END,(information[i][1] + "\n"))
@@ -680,7 +682,7 @@ leftFrame = Frame(window, width = 200, height = 600);
 leftFrame.grid(row=0,column=0, padx=0,pady=0, sticky=NSEW);
 leftFrame.configure(background='white');
 
-img = PhotoImage(file = "images/tenor.gif");
+img = PhotoImage(file = "images/main.gif");
 ChillImageLabel = Label(leftFrame, image = img);
 ChillImageLabel.grid(row = 0, column = 0);
 ChillImageLabel.configure(background='white');
