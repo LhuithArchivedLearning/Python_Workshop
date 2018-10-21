@@ -417,7 +417,7 @@ def export_to_html(target_filename, information, title, wildcardtitle, date):
         basic_html +="""
         </table>
         """
-        basic_html +="<p id='cntr'>Data source: "+"<a href="information[0][4]+">"+"</a/</p>"
+        basic_html +="<p id='cntr'>Data source: "+"<a href=>"+information[0][4]+"</a></p>"
         """
         </body>
         </html>  
@@ -458,26 +458,61 @@ def export_information():
     if option.get() == 'B_O':
         print("Accessing Books Old and Exporting");
         datestring = "September 29 2018";
-        export_to_html("Export/Books_Read_Prevois", AcessBookInformation(False), "Previous Most Read Books", "Ratings", datestring); 
+        export_to_html("Export/Books_Read_Previous", AcessBookInformation(False), "Previous Most Read Books", "Ratings", datestring); 
     elif option.get() == 'B_N':
         print("Accessing Books New and Exporting");
         export_to_html("Export/Books_Read_Current", AcessBookInformation(True), "Current Most Read Books", "Ratings", datestring); 
     elif option.get() == 'M_O':
         print("Accessing Music Old and Exporting");
         datestring = "October 4 2018";
-        export_to_html("Export/Music_Streamed_Prevois", AccessMusicInformation(False), "Previous Most Streamed Music", "Streamed", datestring);
+        export_to_html("Export/Music_Streamed_Previous", AccessMusicInformation(False), "Previous Most Streamed Music", "Streamed", datestring);
     elif option.get() == 'M_N':
         print("Accessing Music New and Exporting");
         export_to_html("Export/Music_Streamed_Current", AccessMusicInformation(True), "Current Most Streamed Music", "Streamed", datestring);
     elif option.get() == 'E_O':
         print("Accessing Electronics Old and Exporting");
         datestring = "September 30 2018";
-        export_to_html("Export/Electronics_Bought_Prevois", AccessElectronicInformation(False), "Previous Most Bought Electronics", "Price", datestring);
+        export_to_html("Export/Electronics_Bought_Previous", AccessElectronicInformation(False), "Previous Most Bought Electronics", "Price", datestring);
     elif option.get() == 'E_N':
         print("Accessing Electronics New and Exporting");
         export_to_html("Export/Electronics_Bought_Current", AccessElectronicInformation(True), "Current Most Bought Electronics", "Price", datestring);
         
-    
+def save_information():
+    #print(option.get());
+    now = datetime.datetime.now();
+    datestring = now.strftime("%B") + " " + str(now.day) + " " + str(now.year);
+    if option.get() == 'B_O':
+        print("Accessing Books Old and Saving");
+        datestring = "September 29 2018";
+        save_to_database(AcessBookInformation(False), datestring);
+    elif option.get() == 'B_N':
+        print("Accessing Books New and Saving");
+        save_to_database(AcessBookInformation(True), datestring);
+    elif option.get() == 'M_O':
+        print("Accessing Music Old and Saving");
+        datestring = "October 4 2018";
+        save_to_database(AccessMusicInformation(False), datestring);
+    elif option.get() == 'M_N':
+        print("Accessing Music New and Saving");
+        save_to_database(AccessMusicInformation(True), datestring);
+    elif option.get() == 'E_O':
+        print("Accessing Electronics Old and Saving");
+        datestring = "September 30 2018";
+        save_to_database(AccessElectronicInformation(False), datestring);
+    elif option.get() == 'E_N':
+        print("Accessing Electronics New and Saving");
+        save_to_database(AccessElectronicInformation(True), datestring);
+
+def save_to_database(information, date):
+    print('Data Being Saved....');
+    connection = connect('top_ten.db');
+
+    with connection:
+        cur = connection.cursor();
+        for i in range(len(information)):
+            cur.execute("INSERT INTO top_ten VALUES(?,?,?,?)", (date,information[i][0], information[i][1], information[i][3]));
+    print('Data Saved Succesfully');
+            
 def display_information(information, windowimage, title):
     new_window = Toplevel(window);
     new_window.geometry("600x300");
@@ -562,17 +597,25 @@ MostReadFrame = LabelFrame(rightFrame, text="Most Read Books", width = 25, heigh
 MostReadFrame.grid(row=0,column=0, padx=5,pady=5, sticky=NSEW);
 MostReadFrame.configure(background='white');
 
+dud = Label(MostReadFrame, width = 3);
+dud.grid(row = 0, column = 0, padx=(0), pady=(0));
+dud.configure(background='white');
+
 MostListenedPreviousRadial = Radiobutton(MostReadFrame, text="Previous", width = 10,indicatoron=0, var=option, value=MODES[0], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
 MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(5), pady=(5));
 MostListenedPreviousRadial.configure(background='white');
 
 MostListenedCurrentRadial= Radiobutton(MostReadFrame, text="Current", width = 10, indicatoron=0, var=option, value=MODES[1], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
-MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(5), pady=(5));
+MostListenedCurrentRadial.grid(row = 0, column = 3, padx=(5), pady=(5));
 MostListenedCurrentRadial.configure(background='white');
 
 MostListenframe = LabelFrame(rightFrame, text="Most Listened To Music", width = 25, height =3, borderwidth = 2, relief = GROOVE);
 MostListenframe.grid(row=1,column=0,  padx=5,pady=5, sticky=NSEW);
 MostListenframe.configure(background='white');
+
+dud = Label(MostListenframe, width = 3);
+dud.grid(row = 0, column = 0, padx=(0), pady=(0));
+dud.configure(background='white');
 
 MostListenedPreviousRadial = Radiobutton(MostListenframe, text="Previous", width = 10, indicatoron=0, var=option, value=MODES[2], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
 MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(5), pady=(5));
@@ -586,6 +629,10 @@ MostBoughtFrame = LabelFrame(rightFrame, text="Most Bought Electronics", width =
 MostBoughtFrame.grid(row=2,column=0, padx=5,pady=5, sticky=NSEW);
 MostBoughtFrame.configure(background='white');
 
+dud = Label(MostBoughtFrame, width = 3);
+dud.grid(row = 0, column = 0, padx=(0), pady=(0));
+dud.configure(background='white');
+
 MostListenedPreviousRadial = Radiobutton(MostBoughtFrame, text="Previous", width = 10, indicatoron=0, var=option, value=MODES[4], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
 MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(5), pady=(5));
 MostListenedPreviousRadial.configure(background='white');
@@ -598,15 +645,18 @@ preview_B_img = PhotoImage(file = "images/book.gif");
 preview_M_img = PhotoImage(file = "images/music.gif");
 preview_E_img = PhotoImage(file = "images/electronics.gif");
     
-OutputButtonFrame = Frame(rightFrame, width = 25, height =3, borderwidth = 1);
+OutputButtonFrame = Frame(rightFrame, width = 20, height = 10, borderwidth = 1);
 OutputButtonFrame.grid(row=3,column=0, padx=0,pady=10, sticky=N);
 OutputButtonFrame.configure(background='white');
 
-MostListenedPreviousRadial = Button(OutputButtonFrame, text="Export", width = 10, command = export_information);
-MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(5), pady=(5));
+CurrentButton = Button(OutputButtonFrame, text="Export", width = 10, command = export_information);
+CurrentButton.grid(row = 0, column = 1, padx=(5), pady=(5));
 
-MostListenedCurrentRadial = Button(OutputButtonFrame, text="Preview", width = 10, command = preview_information);
-MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(5), pady=(5));
+PrevButton = Button(OutputButtonFrame, text="Preview", width = 10, command = preview_information);
+PrevButton.grid(row = 0, column = 2, padx=(5), pady=(5));
+
+SaveButton = Button(OutputButtonFrame, text="Save", width = 10, command = save_information);
+SaveButton.grid(row = 0, column = 0, padx=(10), pady=(5));
 
 window.grid_rowconfigure(0, weight=1)
 window.grid_rowconfigure(1, weight=1)
