@@ -167,11 +167,13 @@ def access_site(url = 'http://www.wikipedia.org/'):
 
 ##### DEVELOP YOUR SOLUTION HERE #####
 
+#just cleans up white space mess
 def clean_white_spaces(text):
     for i in range(len(text)):
         text[i] = text[i].strip();
     return text;
-    
+
+#grabbing any numerical values from data    
 def extract_numbers(text):
     for i in range(len(text)):
         text[i] = findall('[\d.]*\d+', text[i]);
@@ -184,6 +186,7 @@ def general_clean_up(text, phrase = " ", replace_to = ""):
         text[i] = text[i].replace(phrase, replace_to);
     return text;
 
+#simple printer helper
 def PrintInformation(InformationBlock, limit = 10):
     print("#-----------------------------------------#");
     for i in range(len(InformationBlock)):
@@ -209,11 +212,13 @@ def create_list_data(data = []):
                        
     return newdata;
 
+#appending a string to current data, like 1000.000 + streams, or 324 "reads"
 def add_to_list_item(data, string):
     for i in range(len(data)):
         data[i] = data[i] + string;
     return data;
 
+#more generic fend and replace fuction to help clean up data
 def find_and_clean(regex, information):
     for i in range(len(information)):
         information[i] = sub(regex, "", information[i]);
@@ -226,36 +231,48 @@ def concatenate_lists(listA, listB):
     for i in range(len(listA)):
         if i > 0:
             if i < len(listB):
-                newlist.append(listA[i] + ' -' + listB[i].replace("by",""));
+                newlist.append(listA[i] + ' -' + listB[i - 1].replace("by",""));
     return newlist;
 
 #download from source, or access archive
+#---------------------------------- Book Data Access -------------------------------------------------#
 def AcessBookInformation(downloadsource = False):
-    #Download Book Weekling Top, Grabbing names, now need to cull the list, and grab any relevant information (pictures, dates, links and so on)
+    
+    #Download Book Weekling Top,
+    #Grabbing names, now need to cull the list,
+    #and grab any relevant information (pictures, dates, links and so on)
+    
     #https://www.goodreads.com/book/most_read
     bookreadingdownload = "";
     html_file = "";
     sauce = "";
-    
+    #---------------------------------- Download Books ---------------------------------------------#
     if downloadsource:
         print("Accessing......");
         sauce = "https://www.goodreads.com/book/most_read";
         bookreadingdownload = access_site(sauce);
     else:
+    #---------------------------------- Archive Music ---------------------------------------------#
         print("Accessing From Archive");
         sauce = "Archived/bookreadingdownload.html";
         html_file = open(sauce, 'r', encoding='utf-8');
         bookreadingdownload = html_file.read();
-        
+
+    #-----Grabbing Book title ---------------------------------------------#
     booktitles = findall("<span itemprop='name'>(.*?)</span>", bookreadingdownload);
     booktitles = find_and_clean(r'\([^()]*\)', booktitles);
     
- 
+    #-----Grabbing Book title ---------------------------------------------#
     bookindex = findall('<td valign="top" class="number">(.*?)</td>', bookreadingdownload);
+    #-----Grabbing Book img ---------------------------------------------#
     bookimg = findall('itemprop="image" src="(.*?)" />', bookreadingdownload);
+    #-----Grabbing Book index ---------------------------------------------#
     bookrating = findall('</span> (.*?) &mdash;', bookreadingdownload, DOTALL);
+    #-----Grabbing Book img url ---------------------------------------------#
     bookurl = sauce;
-    
+    date = ""
+
+    #----Adding Music Data to new Music Node Data List -------------------------------#
     bookfinal = create_list_data([booktitles, bookindex, bookimg, bookrating, bookurl]);
     
     #clip list to only 10
@@ -268,39 +285,56 @@ def AcessBookInformation(downloadsource = False):
         html_file.close();
 
     return bookfinal;
+#---------------------------------- Book Data Access -------------------------------------------------#
 
-
+#---------------------------------- Music Data Access -------------------------------------------------#
 def AccessMusicInformation(downloadsource = False):
     #https://spotifycharts.com/regional/global/weekly/latest
 
     musictopdownload = "";
     html_file = "";
     sauce = "";
+
+    #---------------------------------- Download Music ---------------------------------------------#
     if downloadsource:
         print("Accessing......");
         sauce = "https://spotifycharts.com/regional/global/weekly/latest";
         musictopdownload = access_site(sauce);
     else:
+    #---------------------------------- Access Music ---------------------------------------------#
         print("Accessing From Archive");
         sauce = "Archived/musictopdownload.html";
         html_file = open(sauce, 'r', encoding='utf-8');
         musictopdownload = html_file.read();
-        
+
+
+    #---------------------------------- Music Data Cleanup -------------------------------------------------#   
     musictitlesraw = findall('<td class="chart-table-track">(.*?)</td>', musictopdownload, DOTALL);
 
+    #----------------------------------- Fiding and Cleaning Title and Arist ------------------#
     musictitles = findall('<strong>(.*?)</strong>', musictopdownload);
     musictitles = general_clean_up(musictitles, "&amp;", "feat.");
     musictitles = general_clean_up(musictitles, "&#039;", "'");
     musicartistname = findall('<span>(.*?)</span>', musictopdownload);
+    #----------------------------------- Fiding and Cleaning Title------------------#
 
+    #--------Merging Artist and  Title------------------#
     track = concatenate_lists(musictitles, musicartistname);
+
+    #--------Fiding Index -------------------------------#
     musicindex = findall('<td class="chart-table-position">(.*?)</td>', musictopdownload);
+
+    #--------Fiding Image -------------------------------#
     musicimg = findall('<img src="(.*?)">', musictopdownload, DOTALL);
+
+    #--------Fiding Stream Count 
     musicstreams = findall('<td class="chart-table-streams">(.*?)</td>', musictopdownload);
     musicurl = sauce;
+    #---------------------------------- Music Data Cleanup -------------------------------------------------#
     
     #musicstreams = add_to_list_item(musicstreams, " streams");
-    
+
+    #----------------------------------- Adding Music Data to new Node Data List -------------------------------#
     musicfinal = create_list_data([track, musicindex, musicimg, musicstreams, musicurl]); 
     
     #clip the list
@@ -312,7 +346,10 @@ def AccessMusicInformation(downloadsource = False):
         html_file.close();
         
     return musicfinal;
-    
+#---------------------------------- Music Data Access -------------------------------------------------#
+
+
+#---------------------------------- Electronics Data Access --------------------------------------------#
 def AccessElectronicInformation(downloadsource = False):
     #https://www.amazon.com/Best-Sellers-Electronics/zgbs/electronics
     electronicstopsaledownload = "";
@@ -334,26 +371,38 @@ def AccessElectronicInformation(downloadsource = False):
 
     #titles were a mess, cleaning up white spaces and anything else in there we dont need
     #will need to fix long ass name issue
+    #--------Grabbing Electornic Item Title------------------#
     electronicstopsaletitle = clean_white_spaces(electronicstopsaletitle);
+    
     electronicstopsaletitle = general_clean_up(electronicstopsaletitle, "&quot", '"');
     electronicstopsaletitle = find_and_clean(r'\([^()]*\)', electronicstopsaletitle);
     electronicstopsaletitle = find_and_clean(r'\|.*$', electronicstopsaletitle);
-    electronicstopsaletitle = find_and_clean(r'\-.*$', electronicstopsaletitle);
+   # electronicstopsaletitle = find_and_clean(r'\-.*$', electronicstopsaletitle);
     electronicstopsaletitle = find_and_clean(r'\,.*$', electronicstopsaletitle);
     electronicstopsaletitle = find_and_clean(r'\;.*$', electronicstopsaletitle);
-    
+    #--------Grabbing Electornic Item Title------------------#
+
+    #--------Grabbing Electornic Item Index ------------------#
     electronicstopsaleindex = findall('<span class="zg-badge-text">(.*?)</span></span><span ', electronicstopsaledownload);
     electronicstopsaleindex = general_clean_up(electronicstopsaleindex, "#", "");
+    #--------Grabbing Electornic Item Index ------------------#
 
-    electronicstopsaleimg = findall('src="(.*?)" height="200" width="200">', electronicstopsaledownload);
+    #--------Grabbing Electornic Item Image ------------------#
+    electronicstopsaleimg = findall('src="(.*?)" height="200" width="200"></div></span>', electronicstopsaledownload);
+
+    #--------Grabbing Electornic Item price ------------------#
     elecontricstopsalerateing = findall(r"<span class='p13n-sc-price'>(.*?:|.*?)</span></span></a>", electronicstopsaledownload);
+
+    #--------Grabbing Electornic Item page source ------------------#
     electronicurl = sauce;
+
+     #----------------------------------- Adding Music Data to new Node Data List -------------------------------#
     electronicstopsalefinal = create_list_data([electronicstopsaletitle, electronicstopsaleindex, electronicstopsaleimg, elecontricstopsalerateing, electronicurl]);
     
-    
+    #clip list to 10 items
     del electronicstopsalefinal[10:];
-   
-    #PrintInformation(electronicstopsalefinal);
+    print(electronicstopsalefinal, end ="");
+    PrintInformation(electronicstopsalefinal);
 
     #Close File Read if were not downloading
     if not(downloadsource):
@@ -361,16 +410,35 @@ def AccessElectronicInformation(downloadsource = False):
 
     return electronicstopsalefinal;
 
-def export_to_html(target_filename, information, title, wildcardtitle, date):
+#---------------------------------- Electronics Data Access --------------------------------------------#
+
+
+#Creates a basic Html String, then appends string information
+#with added paramateres in html style to export
+
+#Header
+#CSS <style>
+#date
+#banner image
+#main Body with information table
+#data source
+def export_to_html(target_filename, information, title, wildcardtitle, date, banner, banner_suace):
         basic_html = ""
         
         basic_html +="""
         <!DOCTYPE html>
         <html>
         <body>
-
+        
         <style>
-        img{
+
+        #banner{
+        width: 85%;
+        display: block;
+        margin: 0 auto;
+        }
+        
+        #imgsizeadjust{
             max-width: 150px;
         }
         h2{
@@ -400,7 +468,13 @@ def export_to_html(target_filename, information, title, wildcardtitle, date):
         basic_html +="""
         <table>
         <tr>
-        <th id='cntr'># on List</th>
+        <th id='cntr'>Rank</th>
+        """
+
+        basic_html += "<img id=banner " + "src=" + banner + ">" + "</td>";
+        basic_html += "<p> " + banner_suace + "</p>";
+
+        basic_html +="""
         <th id='cntr'>Image</th>
         <th>Title</th>
         """
@@ -410,7 +484,7 @@ def export_to_html(target_filename, information, title, wildcardtitle, date):
         for i in range(len(information)):
             basic_html += "<tr>"
             basic_html += "<td id='cntr'>"+ information[i][0] + "</td>"
-            basic_html += "<td id='cntr'>" + "<img " + "src=" + information[i][3] + ">" + "</td>"
+            basic_html += "<td id='cntr'>" + "<img id=imgsizeadjust " + "src=" + information[i][3] + ">" + "</td>"
             basic_html += "<td>"+ information[i][1] + "</td>"
             basic_html += "<td>"+ information[i][2] + "</td>"
             basic_html += "</tr>";
@@ -423,12 +497,15 @@ def export_to_html(target_filename, information, title, wildcardtitle, date):
         </html>  
         """
         
-        #new_html.replace("<information>", "");
+        #write to file
         text_file = open(target_filename + '.' + "html",
                          'w', encoding = 'UTF-8')
         text_file.write(basic_html);
         text_file.close()
+        print("Done");
 
+
+#preview whichever category was selected by the radio buttons
 def preview_information():
     #print(option.get());
     if option.get() == 'B_O':
@@ -451,32 +528,41 @@ def preview_information():
         display_information(AccessElectronicInformation(True), preview_E_img, "Current Most Bought Electronics");
 
 
+#export newly created HTML document to /exports folder Fork Function
+#based on radiobutton option mode
 def export_information():
     #print(option.get());
+
+    #http://fortbragglibrary.org/winter-reading/book-banner-5/
+    #https://pt.pngtree.com/freebackground/musical-symbol-background_379008.html
+    
     now = datetime.datetime.now();
     datestring = now.strftime("%B") + " " + str(now.day) + " " + str(now.year);
     if option.get() == 'B_O':
         print("Accessing Books Old and Exporting");
         datestring = "September 29 2018";
-        export_to_html("Export/Books_Read_Previous", AcessBookInformation(False), "Previous Most Read Books", "Ratings", datestring); 
+        export_to_html("Export/Books_Read_Previous", AcessBookInformation(False), "Previous Most Read Books", "Ratings", datestring, "http://fortbragglibrary.org/wp-content/uploads/2017/12/Book-banner.jpg", ""); 
     elif option.get() == 'B_N':
         print("Accessing Books New and Exporting");
-        export_to_html("Export/Books_Read_Current", AcessBookInformation(True), "Current Most Read Books", "Ratings", datestring); 
+        export_to_html("Export/Books_Read_Current", AcessBookInformation(True), "Current Most Read Books", "Ratings", datestring, "http://fortbragglibrary.org/wp-content/uploads/2017/12/Book-banner.jpg", ""); 
     elif option.get() == 'M_O':
         print("Accessing Music Old and Exporting");
         datestring = "October 4 2018";
-        export_to_html("Export/Music_Streamed_Previous", AccessMusicInformation(False), "Previous Most Streamed Music", "Streamed", datestring);
+        export_to_html("Export/Music_Streamed_Previous", AccessMusicInformation(False), "Previous Most Streamed Music", "Streamed", datestring, "https://png.pngtree.com/thumb_back/fw800/back_pic/02/97/25/715790ced7e3a3b.jpg", "");
     elif option.get() == 'M_N':
         print("Accessing Music New and Exporting");
-        export_to_html("Export/Music_Streamed_Current", AccessMusicInformation(True), "Current Most Streamed Music", "Streamed", datestring);
+        export_to_html("Export/Music_Streamed_Current", AccessMusicInformation(True), "Current Most Streamed Music", "Streamed", datestring, "https://png.pngtree.com/thumb_back/fw800/back_pic/02/97/25/715790ced7e3a3b.jpg", "");
     elif option.get() == 'E_O':
         print("Accessing Electronics Old and Exporting");
         datestring = "September 30 2018";
-        export_to_html("Export/Electronics_Bought_Previous", AccessElectronicInformation(False), "Previous Most Bought Electronics", "Price", datestring);
+        export_to_html("Export/Electronics_Bought_Previous", AccessElectronicInformation(False), "Previous Most Bought Electronics", "Price", datestring, "http://www.uggroups.com/wp-content/uploads/2018/01/Electronics-1.jpg", "");
     elif option.get() == 'E_N':
         print("Accessing Electronics New and Exporting");
-        export_to_html("Export/Electronics_Bought_Current", AccessElectronicInformation(True), "Current Most Bought Electronics", "Price", datestring);
-        
+        export_to_html("Export/Electronics_Bought_Current", AccessElectronicInformation(True), "Current Most Bought Electronics", "Price", datestring, "http://www.uggroups.com/wp-content/uploads/2018/01/Electronics-1.jpg", "");
+
+
+#save information to database Fork Function
+#based on radiobutton option mode
 def save_information():
     #print(option.get());
     now = datetime.datetime.now();
@@ -503,6 +589,7 @@ def save_information():
         print("Accessing Electronics New and Saving");
         save_to_database(AccessElectronicInformation(True), datestring);
 
+#function name says it all :P
 def save_to_database(information, date):
     print('Data Being Saved....');
     connection = connect('top_ten.db');
@@ -512,43 +599,61 @@ def save_to_database(information, date):
         for i in range(len(information)):
             cur.execute("INSERT INTO top_ten VALUES(?,?,?,?)", (date,information[i][0], information[i][1], information[i][3]));
     print('Data Saved Succesfully');
-            
+
+
+#creates new window and display the informations            
 def display_information(information, windowimage, title):
     new_window = Toplevel(window);
-    new_window.geometry("600x300");
+    new_window.geometry("750x300");
     new_window.configure(background='white');
     
-    #Setting it up
+    #-----------------------------Image--------------------------------------------#
+    #image holder
     leftFrame = Frame(new_window, width = 200, height = 600);
     leftFrame.grid(row=0,column=0, padx=0,pady=0, sticky=NSEW);
     leftFrame.configure(background='white');
 
+    
+    ImageLabel = Label(leftFrame, image = windowimage);
+    ImageLabel.grid(row = 0, column = 0);
+    ImageLabel.configure(background='white');
+    #-----------------------------Image--------------------------------------------#
+
+
+    #-----------------------------Data List Display--------------------------------------------#    
     rightFrame = Frame(new_window, width = 100, height = 5, borderwidth = 5);
     rightFrame.grid(row=0,column=1, padx=0,pady=25, sticky=NSEW);
     rightFrame.configure(background='white');
 
-    ImageLabel = Label(leftFrame, image = windowimage);
-    ImageLabel.grid(row = 0, column = 0);
-    ImageLabel.configure(background='white');
-    
     MostReadFrame = Frame(rightFrame, width = 100);
     MostReadFrame.grid(row=0,column=0, padx=0,pady=0, sticky=NSEW);
     MostReadFrame.configure(background='white');
-    
-    displayLabel = Label(MostReadFrame, justify = LEFT);
-    displayLabel.grid(row = 1, column = 0, sticky=W);
+
+    #-------------Data --------------------------------------------#
+    indexLabel = Text(MostReadFrame, width = 3, relief="flat", fg='#E59258', font='Helvetica 10 bold');
+    indexLabel.grid(row = 2, column = 0, padx=0,pady=(15, 19), sticky=W);
+    indexLabel.configure(background='white');
+
+    displayLabel = Text(MostReadFrame, width = 45,  relief="flat", fg='#5896E5', font='Helvetica 10 bold');
+    displayLabel.grid(row = 2, column = 1, padx=0,pady=(15, 19), sticky=W);
     displayLabel.configure(background='white');
-    
-    titleLabel = Label(MostReadFrame, text=title, height = 1);
-    titleLabel.grid(row=0,column=0, padx=0,pady=0 , sticky=W);
+    #------------Data --------------------------------------------#
+
+    #-------------Title --------------------------------------------#
+    titleLabel = Label(MostReadFrame, text=title, width = 25, height = 1, font='Helvetica 18 bold');
+    titleLabel.grid(row=0,column=1, padx=0,pady=0, sticky=NSEW);
     titleLabel.configure(background='white');
-    
+    #-------------Title --------------------------------------------#
+
+    #----------Adding List Infomration to there Text Boxes--------------------------#
     for i in range(len(information)):
         if len(information[i][1]) > 40:
             information[i][1] = information[i][1][:40];
             information[i][1]+=("...");
-            
-        displayLabel["text"] += "["+str(i + 1)+"]" +"  "+ (information[i][1] + "\n")
+
+        displayLabel.insert(END,(information[i][1] + "\n"))
+        indexLabel.insert(END, "[" + str(i) + "]" + "\n");
+    #---------Adding List Infomration to there Text Boxes--------------------------#
         
     new_window.grid_rowconfigure(0, weight=1)
     new_window.grid_rowconfigure(1, weight=1)
@@ -556,13 +661,34 @@ def display_information(information, windowimage, title):
     new_window.grid_rowconfigure(3, weight=1)
     new_window.grid_columnconfigure(0, weight=1)
     new_window.grid_columnconfigure(2, weight=1)
+ #-----------------------------Data List--------------------------------------------#
 
+
+#----------------------------------------- Main Window Setup-----------------------------#   
 window = Tk();
 window.title("Spicy Data");
 window.geometry("600x300");
 window.configure(background='white');
 
 textfont = ('Ariel bold', 12);
+#----------------------------------------- Main Window Setup-----------------------------#
+
+
+#----------------------------------------- Main Image Setup-----------------------------#
+
+leftFrame = Frame(window, width = 200, height = 600);
+leftFrame.grid(row=0,column=0, padx=0,pady=0, sticky=NSEW);
+leftFrame.configure(background='white');
+
+img = PhotoImage(file = "images/tenor.gif");
+ChillImageLabel = Label(leftFrame, image = img);
+ChillImageLabel.grid(row = 0, column = 0);
+ChillImageLabel.configure(background='white');
+#----------------------------------------- Main Image Setup-----------------------------#
+
+
+#----------------------------------------- Radio Buttons Setup-----------------------------#
+
 #Mode codes for radio button values
 #O = Old/Prevois, N = New
 #B = Book, M = Music, E = Electronics
@@ -575,40 +701,38 @@ MODES = [
     ("E_N"),
     ]
 
-#Setting it up
-leftFrame = Frame(window, width = 200, height = 600);
-leftFrame.grid(row=0,column=0, padx=0,pady=0, sticky=NSEW);
-leftFrame.configure(background='white');
 
 rightFrame = Frame(window, width = 100, height = 5, borderwidth = 5);
 rightFrame.grid(row=0,column=1, padx=0,pady=20, sticky=NSEW);
 rightFrame.configure(background='white');
 
-img = PhotoImage(file = "images/tenor.gif");
-ChillImageLabel = Label(leftFrame, image = img);
-ChillImageLabel.grid(row = 0, column = 0);
-ChillImageLabel.configure(background='white');
-
-#initing radio buttons output selection
 option = StringVar()
 option.set("B_O") # initialize radio button selection
-    
+
+
+#------------------------------ Books Radio Buttons ------------------------------#   
 MostReadFrame = LabelFrame(rightFrame, text="Most Read Books", width = 25, height = 3, borderwidth = 2, relief = GROOVE);
 MostReadFrame.grid(row=0,column=0, padx=5,pady=5, sticky=NSEW);
 MostReadFrame.configure(background='white');
 
+#Extra Space Creater
 dud = Label(MostReadFrame, width = 3);
 dud.grid(row = 0, column = 0, padx=(0), pady=(0));
 dud.configure(background='white');
 
+#Prev Radio Button
 MostListenedPreviousRadial = Radiobutton(MostReadFrame, text="Previous", width = 10,indicatoron=0, var=option, value=MODES[0], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
 MostListenedPreviousRadial.grid(row = 0, column = 1, padx=(5), pady=(5));
 MostListenedPreviousRadial.configure(background='white');
 
+#Current Radio Button
 MostListenedCurrentRadial= Radiobutton(MostReadFrame, text="Current", width = 10, indicatoron=0, var=option, value=MODES[1], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
 MostListenedCurrentRadial.grid(row = 0, column = 3, padx=(5), pady=(5));
 MostListenedCurrentRadial.configure(background='white');
+#------------------------------ Books Radio Buttons ------------------------------#
 
+
+#------------------------------ Music Radio Buttons ------------------------------#
 MostListenframe = LabelFrame(rightFrame, text="Most Listened To Music", width = 25, height =3, borderwidth = 2, relief = GROOVE);
 MostListenframe.grid(row=1,column=0,  padx=5,pady=5, sticky=NSEW);
 MostListenframe.configure(background='white');
@@ -624,7 +748,10 @@ MostListenedPreviousRadial.configure(background='white');
 MostListenedCurrentRadial= Radiobutton(MostListenframe, text="Current", width = 10, indicatoron=0, var=option, value=MODES[3], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
 MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(5), pady=(5));
 MostListenedCurrentRadial.configure(background='white');
+#------------------------------ Music Radio Buttons ------------------------------#
 
+
+#------------------------------ Electronics Radio Buttons ------------------------------#
 MostBoughtFrame = LabelFrame(rightFrame, text="Most Bought Electronics", width = 25, height =3, borderwidth = 2, relief = GROOVE);
 MostBoughtFrame.grid(row=2,column=0, padx=5,pady=5, sticky=NSEW);
 MostBoughtFrame.configure(background='white');
@@ -640,11 +767,15 @@ MostListenedPreviousRadial.configure(background='white');
 MostListenedCurrentRadial= Radiobutton(MostBoughtFrame, text="Current", width = 10, indicatoron=0, var=option, value=MODES[5], selectcolor ='#AEE1FF', borderwidth = 1,  font = textfont);
 MostListenedCurrentRadial.grid(row = 0, column = 2, padx=(5), pady=(5));
 MostListenedCurrentRadial.configure(background='white');
+#------------------------------ Electronics Radio Buttons ------------------------------#
 
+#------------------------------ Image Download And Save ------------------------------#
 preview_B_img = PhotoImage(file = "images/book.gif");
 preview_M_img = PhotoImage(file = "images/music.gif");
 preview_E_img = PhotoImage(file = "images/electronics.gif");
-    
+#------------------------------ Image Download And Save ------------------------------#
+
+#------------------------------ Output Buttons ------------------------------#
 OutputButtonFrame = Frame(rightFrame, width = 20, height = 10, borderwidth = 1);
 OutputButtonFrame.grid(row=3,column=0, padx=0,pady=10, sticky=N);
 OutputButtonFrame.configure(background='white');
@@ -657,6 +788,7 @@ PrevButton.grid(row = 0, column = 2, padx=(5), pady=(5));
 
 SaveButton = Button(OutputButtonFrame, text="Save", width = 10, command = save_information);
 SaveButton.grid(row = 0, column = 0, padx=(10), pady=(5));
+#------------------------------ Output Buttons ------------------------------#
 
 window.grid_rowconfigure(0, weight=1)
 window.grid_rowconfigure(1, weight=1)
