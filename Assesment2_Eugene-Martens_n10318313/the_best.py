@@ -180,7 +180,7 @@ def extract_numbers(text):
     return text;
 
 #using this as a text scrub to remove anything i dont want in text(&quot)
-def general_clean_up(text, phrase = " ", replace_to = ""):
+def phrase_clean_up(text, phrase = " ", replace_to = ""):
 
     for i in range(len(text)):
         text[i] = text[i].replace(phrase, replace_to);
@@ -208,7 +208,7 @@ def create_list_data(data = []):
     #3 will be a wildcard, watever is thrown in (rateings, viewings, watever else)
     #4 is the url for the data source
     for i in range(len(data[0])):
-            newdata.append([str(data[1][i]), data[0][i], data[3][i], data[2][i], data[4]]);
+            newdata.append([str(data[1][i]), data[0][i], data[3][i], data[2][i], data[4], data[5][i]]);
                        
     return newdata;
 
@@ -270,10 +270,18 @@ def AcessBookInformation(downloadsource = False):
     bookrating = findall('</span> (.*?) &mdash;', bookreadingdownload, DOTALL);
     #-----Grabbing Book img url ---------------------------------------------#
     bookurl = sauce;
-    date = ""
+    date = findall('<span class="smallText greyText">(.*?)</span>', bookreadingdownload, DOTALL);
+    date = find_and_clean(r'(\t)', date);
+    date = find_and_clean(r'(\n)', date);
+    date = find_and_clean(r'((generated))', date);
+    date = find_and_clean(r'2018 [.*?] ', date);
+    date = " ".join(date);
+    date = date.split();
 
+    bookdatefinal = date[1] + " " + date[2] + " " + date[3];
+    print(bookdatefinal);
     #----Adding Music Data to new Music Node Data List -------------------------------#
-    bookfinal = create_list_data([booktitles, bookindex, bookimg, bookrating, bookurl]);
+    bookfinal = create_list_data([booktitles, bookindex, bookimg, bookrating, bookurl, bookdatefinal]);
     
     #clip list to only 10
     del bookfinal[10:];
@@ -313,8 +321,8 @@ def AccessMusicInformation(downloadsource = False):
 
     #----------------------------------- Fiding and Cleaning Title and Arist ------------------#
     musictitles = findall('<strong>(.*?)</strong>', musictopdownload);
-    musictitles = general_clean_up(musictitles, "&amp;", "feat.");
-    musictitles = general_clean_up(musictitles, "&#039;", "'");
+    musictitles = phrase_clean_up(musictitles, "&amp;", "feat.");
+    musictitles = phrase_clean_up(musictitles, "&#039;", "'");
     musicartistname = findall('<span>(.*?)</span>', musictopdownload);
     #----------------------------------- Fiding and Cleaning Title------------------#
 
@@ -333,9 +341,9 @@ def AccessMusicInformation(downloadsource = False):
     #---------------------------------- Music Data Cleanup -------------------------------------------------#
     
     #musicstreams = add_to_list_item(musicstreams, " streams");
-
+    musicdatefinal = "";
     #----------------------------------- Adding Music Data to new Node Data List -------------------------------#
-    musicfinal = create_list_data([track, musicindex, musicimg, musicstreams, musicurl]); 
+    musicfinal = create_list_data([track, musicindex, musicimg, musicstreams, musicurl, musicdatefinal]); 
     
     #clip the list
     del musicfinal[10:];
@@ -374,7 +382,7 @@ def AccessElectronicInformation(downloadsource = False):
     #--------Grabbing Electornic Item Title------------------#
     electronicstopsaletitle = clean_white_spaces(electronicstopsaletitle);
     
-    electronicstopsaletitle = general_clean_up(electronicstopsaletitle, "&quot", '"');
+    electronicstopsaletitle = phrase_clean_up(electronicstopsaletitle, "&quot", '"');
     electronicstopsaletitle = find_and_clean(r'\([^()]*\)', electronicstopsaletitle);
     electronicstopsaletitle = find_and_clean(r'\|.*$', electronicstopsaletitle);
     #electronicstopsaletitle = find_and_clean(r'\-.*$', electronicstopsaletitle);
@@ -385,7 +393,7 @@ def AccessElectronicInformation(downloadsource = False):
 
     #--------Grabbing Electornic Item Index ------------------#
     electronicstopsaleindex = findall('<span class="zg-badge-text">(.*?)</span></span><span ', electronicstopsaledownload);
-    electronicstopsaleindex = general_clean_up(electronicstopsaleindex, "#", "");
+    electronicstopsaleindex = phrase_clean_up(electronicstopsaleindex, "#", "");
     #--------Grabbing Electornic Item Index ------------------#
 
     #--------Grabbing Electornic Item Image ------------------#
@@ -396,9 +404,9 @@ def AccessElectronicInformation(downloadsource = False):
 
     #--------Grabbing Electornic Item page source ------------------#
     electronicurl = sauce;
-
+    eleoctronicdate = "";
      #----------------------------------- Adding Music Data to new Node Data List -------------------------------#
-    electronicstopsalefinal = create_list_data([electronicstopsaletitle, electronicstopsaleindex, electronicstopsaleimg, elecontricstopsalerateing, electronicurl]);
+    electronicstopsalefinal = create_list_data([electronicstopsaletitle, electronicstopsaleindex, electronicstopsaleimg, elecontricstopsalerateing, electronicurl, eleoctronicdate]);
     
     #clip list to 10 items
     del electronicstopsalefinal[10:];
@@ -462,7 +470,7 @@ def export_to_html(target_filename, information, title, wildcardtitle, date, ban
         }
         </style>
         """
-        
+        print(information[5]);
         basic_html += "<h1 id='cntr' >"+title+"</h1>";
         basic_html += "<h2 id=cntr >Week of "+date+"</h2>";
         
