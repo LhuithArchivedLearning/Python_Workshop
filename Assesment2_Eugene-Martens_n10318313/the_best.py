@@ -208,7 +208,7 @@ def create_list_data(data = []):
     #3 will be a wildcard, watever is thrown in (rateings, viewings, watever else)
     #4 is the url for the data source
     for i in range(len(data[0])):
-            newdata.append([str(data[1][i]), data[0][i], data[3][i], data[2][i], data[4], data[5][i]]);
+            newdata.append([str(data[1][i]), data[0][i], data[3][i], data[2][i], data[4]]);
                        
     return newdata;
 
